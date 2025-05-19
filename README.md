@@ -12,7 +12,7 @@
 
 ## 系统要求
 
-- macOS 15.5 或更高版本
+- macOS 15 或更高版本
 - [Hammerspoon](https://www.hammerspoon.org/) 已安装并获得"辅助功能"权限
 
 ## 安装方法
