@@ -44,8 +44,10 @@
 
 ## 📦 系统要求
 
-- macOS 15.5 或更高版本
-- [Hammerspoon](https://www.hammerspoon.org/) 已安装并获得“辅助功能”权限
+
+- macOS 15 或更高版本
+- [Hammerspoon](https://www.hammerspoon.org/) 已安装并获得"辅助功能"权限
+
 
 ---
 
@@ -96,6 +98,7 @@
 
 ---
 
+
 ## 🛠️ 自定义项
 
 如需自定义默认参数，请修改 `init.lua` 文件顶部的以下变量：
@@ -105,7 +108,6 @@ local clickInterval = 0.02       -- 点击间隔（秒）
 local checkInterval = 5          -- 检查“继续尝试”按钮的间隔（点击次数）
 ```
 
----
 
 ## 📝 更新记录（简要）
 
@@ -115,10 +117,12 @@ local checkInterval = 5          -- 检查“继续尝试”按钮的间隔（�
 
 ---
 
+---
+
 ## 📜 许可证
 
 MIT License
 
 ---
 
-> 本项目由 @你自己 编写，欢迎 fork 或参与改进，如果你喜欢这个项目请点个 star ✨
+> 本项目由 @Eric 编写，欢迎 fork 或参与改进，如果你喜欢这个项目请点个 star ✨
