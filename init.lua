@@ -12,6 +12,12 @@ local clickCounter = 0       -- 点击计数器，用于减少时间检查频率
 local clickInterval = 0.02   -- 点击间隔，默认0.05秒(20次/秒)
 local checkInterval = 5      -- 检查"继续尝试"按钮的间隔（点击次数）
 
+-- 调试开关：如需查看调试日志可改为 true
+local DEBUG = false
+local function dprint(...)
+    if DEBUG then print(...) end
+end
+
 -- 提前创建鼠标事件，提高效率
 local mouseDownEvent = nil
 local mouseUpEvent = nil
@@ -174,23 +180,15 @@ end
 local function clickContinueButton()
     -- 检查是否有"继续尝试"按钮位置
     if not continueButtonPosition then
-        print("未设置\"继续尝试\"按钮位置，跳过")
+        dprint("未设置\"继续尝试\"按钮位置，跳过")
         return
     end
-    
-    print("点击\"继续尝试\"按钮")
-    
-    -- 移动鼠标到"继续尝试"按钮位置
-    hs.mouse.absolutePosition(continueButtonPosition)
-    
-    -- 执行点击
+
+    dprint("点击\"继续尝试\"按钮")
+
+    -- 直接发送点击事件（无需移动鼠标指针）
     continueDownEvent:post()
     continueUpEvent:post()
-    
-    -- 延迟一小段时间后移回主按钮位置
-    hs.timer.doAfter(0.1, function()
-        hs.mouse.absolutePosition(clickerPosition)
-    end)
 end
 
 -- 执行点击操作 - 优化版本
@@ -254,8 +252,8 @@ local function startClicking()
     -- 重置计数器
     clickCounter = 0
     
-    -- 移动鼠标到目标位置（只移动一次）
-    hs.mouse.absolutePosition(clickerPosition)
+    -- 移动鼠标到目标位置（只移动一次）  -- 移除指针移动以减少开销
+    -- hs.mouse.absolutePosition(clickerPosition)
     
     -- 创建鼠标事件（只创建一次）
     mouseDownEvent = hs.eventtap.event.newMouseEvent(hs.eventtap.event.types.leftMouseDown, clickerPosition)
