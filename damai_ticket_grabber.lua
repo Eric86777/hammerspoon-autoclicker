@@ -1,9 +1,61 @@
--- 大麦抢票神器 v2.0 智能学习版
+-- 大麦抢票神器 v2.0 智能学习版 (清除重置版)
 -- 专为iPhone镜像优化的高速抢票脚本
 -- 新增：实时坐标学习功能
+-- 特性：每次加载执行完整清理，确保全新状态
 -- 作者：AI助手 & Eric
 
-print("=== 大麦抢票神器 v2.0 智能学习版 ===")
+print("=== 大麦抢票神器 v2.0 智能学习版 (清除重置版) ===")
+
+-- ========== 脚本加载时的完整清理机制 ==========
+print("[清理] 开始执行脚本重置...")
+
+-- 1. 清理可能存在的全局变量和旧状态
+if _G.damaiGrabber then
+    -- 停止可能运行中的定时器
+    if _G.damaiGrabber.grabTimer then
+        _G.damaiGrabber.grabTimer:stop()
+        _G.damaiGrabber.grabTimer = nil
+        print("[清理] 已停止旧的定时器")
+    end
+    
+    -- 清理事件对象
+    if _G.damaiGrabber.mouseEvents then
+        for k, v in pairs(_G.damaiGrabber.mouseEvents) do
+            _G.damaiGrabber.mouseEvents[k] = nil
+        end
+        print("[清理] 已清理旧的鼠标事件")
+    end
+    
+    -- 解绑旧的快捷键
+    if _G.damaiGrabber.hotkeys then
+        for _, hotkey in ipairs(_G.damaiGrabber.hotkeys) do
+            if hotkey and hotkey.delete then
+                hotkey:delete()
+            end
+        end
+        print("[清理] 已解绑旧的快捷键")
+    end
+    
+    -- 清理整个全局表
+    _G.damaiGrabber = nil
+end
+
+-- 2. 强制垃圾回收
+collectgarbage("collect")
+collectgarbage("collect") -- 执行两次确保彻底清理
+print("[清理] 已执行垃圾回收")
+
+-- 3. 创建新的全局容器
+_G.damaiGrabber = {
+    hotkeys = {},
+    mouseEvents = {},
+    grabTimer = nil
+}
+
+print("[清理] 脚本重置完成，开始初始化...")
+print("=====================================\n")
+
+-- ========== 以下是原始脚本内容 ==========
 
 -- 按钮坐标配置（支持动态更新）
 local buttonCoords = {
@@ -61,6 +113,13 @@ end
 local function updateMouseEvents()
     dprint("更新鼠标事件...")
     
+    -- 先清理旧的事件对象
+    if _G.damaiGrabber.mouseEvents then
+        for k, v in pairs(_G.damaiGrabber.mouseEvents) do
+            _G.damaiGrabber.mouseEvents[k] = nil
+        end
+    end
+    
     -- 创建主按钮点击事件
     if buttonCoords.mainButton then
         mouseEvents.mainDown = createMouseEvent(
@@ -71,6 +130,9 @@ local function updateMouseEvents()
             hs.eventtap.event.types.leftMouseUp, 
             buttonCoords.mainButton
         )
+        -- 同步到全局容器
+        _G.damaiGrabber.mouseEvents.mainDown = mouseEvents.mainDown
+        _G.damaiGrabber.mouseEvents.mainUp = mouseEvents.mainUp
     end
     
     -- 创建错误处理按钮点击事件
@@ -84,6 +146,9 @@ local function updateMouseEvents()
             buttonCoords.errorButton
         )
         config.hasErrorButton = true
+        -- 同步到全局容器
+        _G.damaiGrabber.mouseEvents.errorDown = mouseEvents.errorDown
+        _G.damaiGrabber.mouseEvents.errorUp = mouseEvents.errorUp
     else
         config.hasErrorButton = false
     end
@@ -212,6 +277,9 @@ local function startGrabbing()
         config.clickInterval
     )
     
+    -- 保存到全局容器
+    _G.damaiGrabber.grabTimer = config.grabTimer
+    
     local errorStatus = config.hasErrorButton and 
         string.format("错误处理：(%.0f,%.0f)", buttonCoords.errorButton.x, buttonCoords.errorButton.y) or
         "错误处理：等待学习"
@@ -316,13 +384,15 @@ print("Option + I : 显示状态 📊")
 print("Option + D : 切换调试 🔧")
 
 -- 绑定快捷键
-hs.hotkey.bind({"alt"}, "R", recordMainButton)
-hs.hotkey.bind({"alt"}, "E", recordErrorButton)
-hs.hotkey.bind({"alt"}, "G", startGrabbing)
-hs.hotkey.bind({"alt"}, "S", function() stopGrabbing("手动停止") end)
-hs.hotkey.bind({"alt"}, "Q", emergencyStop)
-hs.hotkey.bind({"alt"}, "I", showStatus)
-hs.hotkey.bind({"alt"}, "D", toggleDebug)
+_G.damaiGrabber.hotkeys = {
+    hs.hotkey.bind({"alt"}, "R", recordMainButton),
+    hs.hotkey.bind({"alt"}, "E", recordErrorButton),
+    hs.hotkey.bind({"alt"}, "G", startGrabbing),
+    hs.hotkey.bind({"alt"}, "S", function() stopGrabbing("手动停止") end),
+    hs.hotkey.bind({"alt"}, "Q", emergencyStop),
+    hs.hotkey.bind({"alt"}, "I", showStatus),
+    hs.hotkey.bind({"alt"}, "D", toggleDebug)
+}
 
 -- 初始化完成
 showNotification(
