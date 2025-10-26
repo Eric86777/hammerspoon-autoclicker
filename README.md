@@ -143,3 +143,7 @@ A: 修改脚本中的 `clickInterval` 值：
 ---
 
 Made with ❤️ by Eric & AI Assistant
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Eric86777/hammerspoon-autoclicker&type=Date)](https://www.star-history.com/#Eric86777/hammerspoon-autoclicker&Date)
